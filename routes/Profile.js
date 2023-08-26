@@ -6,7 +6,7 @@ const {
   updateProfile,
   getAllUserDetails,
   updateDisplayPicture,
- getEnrolledCoupons,
+  getEnrolledCoupons,
   sellerDashboard,
 } = require("../controller/Profile")
 
@@ -18,7 +18,7 @@ router.delete("/deleteProfile", auth, deleteAccount)
 router.put("/updateProfile", auth, updateProfile)
 router.get("/getUserDetails", auth, getAllUserDetails)
 // Get Enrolled Courses
-router.get("/getEnrolledCourses", auth,getEnrolledCoupons)
+router.get("/getEnrolledCoupons", auth,getEnrolledCoupons)
 router.put("/updateDisplayPicture", auth, updateDisplayPicture)
 router.get("/sellerDashboard", auth, isSeller, sellerDashboard)
 

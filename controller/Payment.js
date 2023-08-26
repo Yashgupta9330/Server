@@ -11,30 +11,30 @@ const crypto = require("crypto");
 //initiate the razorpay order
 exports.capturePayment = async(req, res) => {
 
-    const {courses} = req.body;
+    const {coupons} = req.body;
     const userId = req.user.id;
 
-    if(courses.length === 0) {
-        return res.json({success:false, message:"Please provide Course Id"});
+    if(coupons.length === 0) {
+        return res.json({success:false, message:"Please provide couponId"});
     }
 
     let totalAmount = 0;
 
-    for(const course_id of courses) {
-        let course;
+    for(const coupon_id of coupons) {
+        let coupon;
         try{
            
-            course = await Course.findById(course_id);
-            if(!course) {
-                return res.status(200).json({success:false, message:"Could not find the course"});
+            coupon= await Course.findById(coupon_id);
+            if(!coupon) {
+                return res.status(200).json({success:false, message:"Could not find the coupon"});
             }
 
             const uid  = new mongoose.Types.ObjectId(userId);
-            if(course.studentsEnrolled.includes(uid)) {
-                return res.status(200).json({success:false, message:"Student is already Enrolled"});
+            if(coupon.Buyerbought.includes(uid)) {
+                return res.status(200).json({success:false, message:"user is already Enrolled"});
             }
 
-            totalAmount += course.price;
+            totalAmount += coupon.price;
         }
         catch(error) {
             console.log(error);
@@ -102,15 +102,15 @@ const enrollStudents = async(courses, userId, res) => {
 
     for(const courseId of courses) {
         try{
-            //find the course and enroll the student in it
-        const enrolledCourse = await Course.findOneAndUpdate(
+            //find the couponand enroll the student in it
+        const enrolledcoupon= await Course.findOneAndUpdate(
             {_id:courseId},
             {$push:{studentsEnrolled:userId}},
             {new:true},
         )
 
         if(!enrolledCourse) {
-            return res.status(500).json({success:false,message:"Course not Found"});
+            return res.status(500).json({success:false,message:"couponnot Found"});
         }
 
         const courseProgress = await CourseProgress.create({
@@ -119,7 +119,7 @@ const enrollStudents = async(courses, userId, res) => {
             completedVideos: [],
         })
 
-        //find the student and add the course to their list of enrolledCOurses
+        //find the student and add the couponto their list of enrolledCOurses
         const enrolledStudent = await User.findByIdAndUpdate(userId,
             {$push:{
                 courses: courseId,
@@ -178,13 +178,13 @@ exports.sendPaymentSuccessEmail = async(req, res) => {
 //     if(!course_id) {
 //         return res.json({
 //             success:false,
-//             message:'Please provide valid course ID',
+//             message:'Please provide valid couponID',
 //         })
 //     };
 //     //valid courseDetail
 //     let course;
 //     try{
-//         course = await Course.findById(course_id);
+//         coupon= await Course.findById(course_id);
 //         if(!course) {
 //             return res.json({
 //                 success:false,
@@ -268,8 +268,8 @@ exports.sendPaymentSuccessEmail = async(req, res) => {
 //         try{
 //                 //fulfil the action
 
-//                 //find the course and enroll the student in it
-//                 const enrolledCourse = await Course.findOneAndUpdate(
+//                 //find the couponand enroll the student in it
+//                 const enrolledcoupon= await Course.findOneAndUpdate(
 //                                                 {_id: courseId},
 //                                                 {$push:{studentsEnrolled: userId}},
 //                                                 {new:true},
@@ -278,13 +278,13 @@ exports.sendPaymentSuccessEmail = async(req, res) => {
 //                 if(!enrolledCourse) {
 //                     return res.status(500).json({
 //                         success:false,
-//                         message:'Course not Found',
+//                         message:'couponnot Found',
 //                     });
 //                 }
 
 //                 console.log(enrolledCourse);
 
-//                 //find the student andadd the course to their list enrolled courses me 
+//                 //find the student andadd the couponto their list enrolled courses me 
 //                 const enrolledStudent = await User.findOneAndUpdate(
 //                                                 {_id:userId},
 //                                                 {$push:{courses:courseId}},
@@ -303,7 +303,7 @@ exports.sendPaymentSuccessEmail = async(req, res) => {
 //                 console.log(emailResponse);
 //                 return res.status(200).json({
 //                     success:true,
-//                     message:"Signature Verified and COurse Added",
+//                     message:"Signature Verified and couponAdded",
 //                 });
 
 

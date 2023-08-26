@@ -7,9 +7,7 @@ const { convertSecondsToDuration } = require("../utils/secToDuration")
 
 exports.createCoupon= async (req,res)=>{
   try{
-
   const userId = req.user.id
- 
   // Get all required fields from request body
   let {
     couponName,
@@ -80,7 +78,7 @@ exports.createCoupon= async (req,res)=>{
   const newcoupon = await Coupon.create({
     couponName,
     couponDescription,
-     Seller: SellerDetails._id,
+    Seller: SellerDetails._id,
     couponContent,
     price,
     category: categoryDetails._id,
@@ -196,17 +194,10 @@ exports.editcoupon = async (req, res) => {
 exports.getAllCoupon = async (req, res) => {
   try {
     const allCoupons = await Coupon.find(
-      { status: "valid" },
-      {
-        courseName: true,
-        price: true,
-        thumbnail: true,
-        instructor: true,
-        ratingAndReviews: true,
-        studentsEnrolled: true,
-      }
-    )
-      .populate("Seller")
+      { status: "valid" }
+    ) .populate({
+      path: "Seller"
+    })
       .exec()
 
     return res.status(200).json({
@@ -217,7 +208,7 @@ exports.getAllCoupon = async (req, res) => {
     console.log(error)
     return res.status(404).json({
       success: false,
-      message: `Can't Fetch Course Data`,
+      message: `Can't Fetch Coupon  Data`,
       error: error.message,
     })
   }
@@ -282,12 +273,12 @@ exports.getCouponDetails = async (req, res) => {
     })
       .populate({
         path: "Seller",
-        populate: {
+        populate:({
           path: "additionalDetails",
-        },
+        })
       })
-      .populate("category")
-      .populate("ratingAndReviews")
+      .populate("tag")
+      .populate("ratingAndReview")
       .exec()
 
     if (!couponDetails) {
@@ -374,9 +365,9 @@ exports.getsellercoupons = async (req, res) => {
     const sellerId = req.user.id
 
     // Find all courses belonging to the seller
-    const sellerCourses = await Course.find({
-      seller: sellerId,
-    }).sort({ createdAt: -1 })
+    const sellerCourses = await Coupon.findById({
+      Seller: sellerId
+    })
 
     // Return the seller's courses
     res.status(200).json({

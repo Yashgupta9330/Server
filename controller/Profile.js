@@ -57,6 +57,7 @@ exports.deleteAccount = async (req, res) => {
 		}
 		// Delete Assosiated Profile with the User
 		await Profile.findByIdAndDelete({ _id: user.additionalDetails });
+		
 		// TODO: Unenroll User From All the Enrolled Courses
 		// Now Delete User
 		await User.findByIdAndDelete({ _id: id });
@@ -154,8 +155,8 @@ exports.updateDisplayPicture = async (req, res) => {
   
 exports.sellerDashboard = async (req, res) => {
 	try {
-	  const couponDetails = await Coupon.find({ Seller: req.user.id })
-  
+	    const couponDetails = await Coupon.find({Seller: req.user.id})
+		console.log(couponDetails)
 	    const couponData = couponDetails.map((coupon) => {
 		const  totalBuyerbought= coupon.Buyerbought.length
 		const totalAmountGenerated = totalBuyerbought * coupon.price
@@ -165,9 +166,10 @@ exports.sellerDashboard = async (req, res) => {
 		  _id: coupon._id,
 		  couponName: coupon.couponName,
 		  couponDescription: coupon.couponDescription,
-		  // Include other course properties as needed
+		  price:coupon.price,
 		  totalBuyerbought,
 		  totalAmountGenerated,
+		  expirydate:coupon.expirydate
 		}
   
 		return courseDataWithStats
